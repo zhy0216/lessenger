@@ -3,3 +3,4 @@ sanic_cors
 aiohttp
 pytest
 pytest-asyncio
+pytest-sanic
