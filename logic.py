@@ -67,9 +67,13 @@ class Fetcher:
             location_json = json["results"][0]["geometry"]["location"]
             return LatLng(location_json["lat"], location_json["lng"])
 
-    async def fetch_current_weather_by_latlng(self, latlng: Tuple[float, float]) -> Weather:
+    async def fetch_current_weather_by_latlng(self, latlng: LatLng) -> Weather:
         latlng_str = ','.join(map(str, latlng))
         url = f"{self.DARK_SKY_API_URL}/forecast/{setting.DARK_SKY_API_KEY}/{latlng_str}?exclude=minutely,hourly,daily,alerts,flags"
+        async with self.session.get(url) as r:
+            r.raise_for_status()
+            json = await r.json()
+            return Weather(json["currently"]["temperature"], json["currently"]["summary"])
 
 class ActionHandler:
     def __init__(self):
