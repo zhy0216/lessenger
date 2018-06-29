@@ -3,10 +3,15 @@ from typing import List
 from sanic import Sanic
 from sanic.response import json
 from sanic_cors import CORS
-from logic import Action, JoinActionHanlder, MessageActionHanlder, Message
+from logic import Action, JoinActionHanlder, MessageActionHanlder, Message, MessageActionDispatcher
 
 app = Sanic(__name__)
 CORS(app)
+
+
+@app.exception(Exception)
+async def ignore_404s(request, exception):
+    return json(dict(type="error", text=str(exception)))
 
 
 @app.route("/chat/messages", methods=['POST'])
@@ -17,7 +22,10 @@ async def hello_world(request):
         name = request.form.get('name')
         handler = JoinActionHanlder(user_id=user_id, name=name)
     elif action == Action.MESSAGE:
-        handler = MessageActionHanlder()
+        user_id = request.form.get('user_id')
+        text = request.form.get('text')
+        dispatcher = MessageActionDispatcher(user_id=user_id, text=text)
+        handler = await dispatcher.parse_text()
 
     messages: List[Message] = await handler.response()
     return json({

@@ -22,6 +22,7 @@ make sure all the test cases can pass before you run the application.
 
 ## Reference:
 
-* [https://github.com/channelcat/sanic](https://github.com/channelcat/sanic)
-* [https://github.com/ashleysommer/sanic-cors](https://github.com/ashleysommer/sanic-cors)
-* [https://github.com/aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)
+* [sanic](https://github.com/channelcat/sanic)
+* [sanic-cors](https://github.com/ashleysommer/sanic-cors)
+* [aiohttp](https://github.com/aio-libs/aiohttp)
+* [python regular expressions](https://docs.python.org/3/library/re.html)
