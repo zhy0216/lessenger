@@ -1,4 +1,8 @@
+import pytest
+
+from logic import Fetcher, LatLng
 from web import app
+from tests import float_equal
 
 
 def test_join_action():
