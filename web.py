@@ -10,8 +10,8 @@ CORS(app)
 
 
 @app.exception(Exception)
-async def ignore_404s(request, exception):
-    return json(dict(type="error", text=str(exception)))
+async def error_handler(request, exception):
+    return json(dict(type="text", text="error:" + str(exception)))
 
 
 @app.route("/chat/messages", methods=['POST'])
