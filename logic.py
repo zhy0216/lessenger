@@ -2,6 +2,8 @@ from collections import namedtuple
 from enum import Enum
 from typing import List, Dict, Union, Tuple
 
+import aiohttp
+
 import setting
 
 class Action(Enum):
@@ -46,11 +48,24 @@ class Fetcher:
     GMAP_API_URL = "https://maps.googleapis.com/maps/api/geocode"
     DARK_SKY_API_URL = "https://api.darksky.net"
 
+    def __init__(self, session: aiohttp.ClientSession):
+        self.session = session
+
     async def fetch_latlng_by_address(self, address) -> LatLng:
         url = f"{self.GMAP_API_URL}/json?address={address}&key={setting.GMAP_API_KEY}"
+        async with self.session.get(url) as r:
+            r.raise_for_status()
+            json = await r.json()
+            location_json = json["results"][0]["geometry"]["location"]
+            return LatLng(location_json["lat"], location_json["lng"])
 
     async def fetch_latlng_by_postcode(self, postcode) -> LatLng:
         url = f"{self.GMAP_API_URL}/json?components=postal_code:{postcode}&key={setting.GMAP_API_KEY}"
+        async with self.session.get(url) as r:
+            r.raise_for_status()
+            json = await r.json()
+            location_json = json["results"][0]["geometry"]["location"]
+            return LatLng(location_json["lat"], location_json["lng"])
 
     async def fetch_current_weather_by_latlng(self, latlng: Tuple[float, float]) -> Weather:
         latlng_str = ','.join(map(str, latlng))
