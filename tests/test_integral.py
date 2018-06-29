@@ -53,5 +53,5 @@ async def test_weather_check3(test_cli):
     await weatehr_check(test_cli, "sf weather")
 
 
-async def test_weather_check3(test_cli):
+async def test_weather_check4(test_cli):
     await weatehr_check(test_cli, "what's the weather in sf")

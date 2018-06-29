@@ -19,6 +19,7 @@ It is a small code project practice.
 * `py.test tests`
 
 make sure all the test cases can pass before you run the application.
+If it did not pass, probably you forgot to setup `DARK_SKY_API_KEY` and `GMAP_API_KEY`.
 
 ## Reference:
 
