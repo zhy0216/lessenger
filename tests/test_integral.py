@@ -32,7 +32,7 @@ async def test_fetcher_fetch_current_weather_by_latlng():
         assert weather.temperature
 
 
-async def weatehr_check(test_cli, ask_weather):
+async def weather_check(test_cli, ask_weather):
     response = await test_cli.post('/chat/messages', data={
         "action": "message",
         "user_id": 123456,
@@ -43,7 +43,7 @@ async def weatehr_check(test_cli, ask_weather):
 
 
 async def test_weather_check1(test_cli):
-    await asyncio.gather(weatehr_check(test_cli, "weather in 94103"),
-                         weatehr_check(test_cli, "94103 weather"),
-                         weatehr_check(test_cli, "sf weather"),
-                         weatehr_check(test_cli, "what's the weather in sf"))
+    await asyncio.gather(weather_check(test_cli, "weather in 94103"),
+                         weather_check(test_cli, "94103 weather"),
+                         weather_check(test_cli, "sf weather"),
+                         weather_check(test_cli, "what's the weather in sf"))

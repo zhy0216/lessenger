@@ -11,7 +11,7 @@ CORS(app)
 
 @app.exception(Exception)
 async def error_handler(request, exception):
-    return json(dict(type="text", text="error:" + str(exception)))
+    return json({"messsages": dict(type="error", text="error:" + str(exception))})
 
 
 @app.route("/chat/messages", methods=['POST'])
