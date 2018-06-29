@@ -1,3 +1,4 @@
+import asyncio
 import aiohttp
 import pytest
 from logic import Fetcher
@@ -42,16 +43,7 @@ async def weatehr_check(test_cli, ask_weather):
 
 
 async def test_weather_check1(test_cli):
-    await weatehr_check(test_cli, "weather in 94103")
-
-
-async def test_weather_check2(test_cli):
-    await weatehr_check(test_cli, "94103 weather")
-
-
-async def test_weather_check3(test_cli):
-    await weatehr_check(test_cli, "sf weather")
-
-
-async def test_weather_check4(test_cli):
-    await weatehr_check(test_cli, "what's the weather in sf")
+    await asyncio.gather(weatehr_check(test_cli, "weather in 94103"),
+                         weatehr_check(test_cli, "94103 weather"),
+                         weatehr_check(test_cli, "sf weather"),
+                         weatehr_check(test_cli, "what's the weather in sf"))
