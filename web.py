@@ -6,7 +6,7 @@ from sanic_cors import CORS
 from logic import Action, JoinActionHanlder, MessageActionHanlder, Message, MessageActionDispatcher
 
 app = Sanic(__name__)
-CORS(app)
+CORS(app, automatic_options=True)
 
 
 @app.exception(Exception)
