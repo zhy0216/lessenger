@@ -6,7 +6,6 @@ from web import app
 from tests import float_equal
 
 
-@pytest.mark.asyncio
 async def test_fetcher_fetch_latlng_by_address():
     async with aiohttp.ClientSession() as session:
         fetcher = Fetcher(session)
@@ -15,7 +14,6 @@ async def test_fetcher_fetch_latlng_by_address():
         assert float_equal(latlng.lng, -122.4194155)
 
 
-@pytest.mark.asyncio
 async def test_fetcher_fetch_latlng_by_postcode():
     async with aiohttp.ClientSession() as session:
         fetcher = Fetcher(session)
@@ -24,7 +22,6 @@ async def test_fetcher_fetch_latlng_by_postcode():
         assert float_equal(latlng.lng, -122.4099154)
 
 
-@pytest.mark.asyncio
 async def test_fetcher_fetch_current_weather_by_latlng():
     async with aiohttp.ClientSession() as session:
         fetcher = Fetcher(session)
@@ -34,20 +31,27 @@ async def test_fetcher_fetch_current_weather_by_latlng():
         assert weather.temperature
 
 
-def weatehr_check(ask_weather):
-    request, response = app.test_client.post('/chat/messages', data={
+async def weatehr_check(test_cli, ask_weather):
+    response = await test_cli.post('/chat/messages', data={
         "action": "message",
         "user_id": 123456,
         "text": ask_weather
     })
     assert response.status == 200
-    assert response.json["messages"][0]["text"].startswith("Currently")
+    assert (await response.json())["messages"][0]["text"].startswith("Currently")
 
 
-def test_weather_check():
-    for ask_weather in ("weather in 94103",
-                        "94103 weather",
-                        "sf weather",
-                        "what's the weather in sf"):
-        weatehr_check(ask_weather)
+async def test_weather_check1(test_cli):
+    await weatehr_check(test_cli, "weather in 94103")
 
+
+async def test_weather_check2(test_cli):
+    await weatehr_check(test_cli, "94103 weather")
+
+
+async def test_weather_check3(test_cli):
+    await weatehr_check(test_cli, "sf weather")
+
+
+async def test_weather_check3(test_cli):
+    await weatehr_check(test_cli, "what's the weather in sf")

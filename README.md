@@ -16,7 +16,7 @@ It is a small code project practice.
 * `python web.py`
 
 ## Run Test
-* `py.test tests/*`
+* `py.test tests`
 
 make sure all the test cases can pass before you run the application.
 

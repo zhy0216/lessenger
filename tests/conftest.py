@@ -1,10 +1,6 @@
 import pytest
 
 
-def float_equal(x, y) -> bool:
-    return abs(x - y) < 0.000001
-
-
 @pytest.yield_fixture
 def app():
     from web import app
