@@ -1,5 +1,8 @@
-from typing import List, Dict, Union
+from collections import namedtuple
 from enum import Enum
+from typing import List, Dict, Union, Tuple
+
+import setting
 
 class Action(Enum):
     JOIN = 'join'
@@ -29,15 +32,29 @@ class PureMessage(Message):
 class RichMessage(Message):
     type = 'rich'
 
-    def __init__(self, ):
+    def __init__(self):
         pass
 
     def to_json(self) -> Dict:
-        return {
-            "type": self.type,
-            "text": self.text
-        }
+        pass
 
+
+Weather = namedtuple("Weather", ['temperature', 'summary'])
+LatLng = namedtuple("LatLong", ['lat', 'lng'])
+
+class Fetcher:
+    GMAP_API_URL = "https://maps.googleapis.com/maps/api/geocode"
+    DARK_SKY_API_URL = "https://api.darksky.net"
+
+    async def fetch_latlng_by_address(self, address) -> LatLng:
+        url = f"{self.GMAP_API_URL}/json?address={address}&key={setting.GMAP_API_KEY}"
+
+    async def fetch_latlng_by_postcode(self, postcode) -> LatLng:
+        url = f"{self.GMAP_API_URL}/json?components=postal_code:{postcode}&key={setting.GMAP_API_KEY}"
+
+    async def fetch_current_weather_by_latlng(self, latlng: Tuple[float, float]) -> Weather:
+        latlng_str = ','.join(map(str, latlng))
+        url = f"{self.DARK_SKY_API_URL}/forecast/{setting.DARK_SKY_API_KEY}/{latlng_str}?exclude=minutely,hourly,daily,alerts,flags"
 
 class ActionHandler:
     def __init__(self):
