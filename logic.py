@@ -7,6 +7,7 @@ import aiohttp
 
 import setting
 
+
 class Action(Enum):
     JOIN = 'join'
     MESSAGE = 'message'
@@ -44,6 +45,7 @@ class RichMessage(Message):
 
 Weather = namedtuple("Weather", ['temperature', 'summary'])
 LatLng = namedtuple("LatLong", ['lat', 'lng'])
+
 
 class Fetcher:
     GMAP_API_URL = "https://maps.googleapis.com/maps/api/geocode"
@@ -104,11 +106,27 @@ class MessageActionHanlder(ActionHandler):
 
 
 class WeatherMessageHanlder(MessageActionHanlder):
-    def __init__(self, weather: Weather):
-        self.weather = weather
+    def __init__(self, location: str):
+        self.location = None
+        self.postcode = None
+        try:
+            # see if it is a postcode
+            location = int(location)
+            self.postcode = location
+        except ValueError:
+            self.location = location
 
     async def response(self) -> List[PureMessage]:
-        return [PureMessage(text=f"Currently it's {self.weather.temperature}F. {self.weather.summary}")]
+        async with aiohttp.ClientSession() as session:
+            fetcher = Fetcher(session)
+            if self.postcode:
+                lanlng = await fetcher.fetch_latlng_by_postcode(self.postcode)
+            else:
+                lanlng = await fetcher.fetch_latlng_by_address(self.location)
+
+            weather = await fetcher.fetch_current_weather_by_latlng(lanlng)
+
+        return [PureMessage(text=f"Currently it's {weather.temperature}F. {weather.summary}")]
 
 
 class MessageActionDispatcher:
@@ -129,20 +147,9 @@ class MessageActionDispatcher:
             m = re_pattern.search(self.text)
             try:
                 location = m.group('location')
+                return WeatherMessageHanlder(location)
             except (IndexError, AttributeError):
                 continue
-            async with aiohttp.ClientSession() as session:
-                fetcher = Fetcher(session)
-                try:
-                    # see if it is a postcode
-                    location = int(location)
-                    lanlng = await fetcher.fetch_latlng_by_postcode(location)
-                except ValueError:
-                    # it is an address
-                    lanlng = await fetcher.fetch_latlng_by_address(location)
-
-                weather = await fetcher.fetch_current_weather_by_latlng(lanlng)
-                return WeatherMessageHanlder(weather)
 
         return MessageActionHanlder(text="i did not understand what you said")
 
